@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jakukam Logistics Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        :root {
+            --primary-blue: #e6f3ff;
+            --secondary-blue: #0080ff;
+            --accent-blue: #004d99;
+        }
+
+        body {
+            background: var(--primary-blue);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .header {
+            background: white;
+            color: var(--accent-blue);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+
+        nav {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: var(--secondary-blue);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            background: var(--primary-blue);
+        }
+
+        .product-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-form input, .product-form button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .product-form button {
+            background: var(--secondary-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .product-form button:hover {
+            background: var(--accent-blue);
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+        }
+
+        .product img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            color: var(--secondary-blue);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .edit-button {
+            background: var(--secondary-blue);
+            color: white;
+        }
+
+        .delete-button {
+            background: #ff4444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h2>Login to Admin Panel</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="header">
+            <h1>Jakukam Logistics</h1>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-bar" id="searchBar" placeholder="Search products...">
+        </div>
+
+        <nav>
+            <a href="#" onclick="showSection('dashboard')">Dashboard</a>
+            <a href="#" onclick="showSection('products')">Products</a>
+            <a href="products.html" onclick="showSection('reports')">Reports</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+
+        <div class="product-form">
+        <h2>Add New Product</h2>
+        <input type="text" id="productName" placeholder="Product Name">
+        <input type="number" id="productPrice" placeholder="Price">
+        <input type="number" id="productStock" placeholder="Stock">
+        <input type="text" id="productCategory" placeholder="Category">
+        <textarea id="productDescription" placeholder="Product Description"></textarea>
+        <input type="file" id="productImage" accept="image/*">
+        <button onclick="addProduct()">Add Product</button>
+    </div>
+
+        <div class="product-list" id="productList">
+            <!-- Products will be added here dynamically -->
+        </div>
+    </div>
+
+    <script>
+		 
+
+        // ... (Rest of the JavaScript from the original code) ...
+        // Login credentials (in practice, these should be handled server-side)
+         // Login credentials (in practice, these should be handled server-side)
+        const VALID_USERNAME = 'admin';
+        const VALID_PASSWORD = 'password123';
+
+        // Initialize products from localStorage or empty array
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                loadProducts(); 
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+		// Function to display products on the product page
+        function displayProductsOnProductPage() {
+            const productPageProducts = document.getElementById('productPageProductList');
+            productPageProducts.innerHTML = '';
+
+            products.forEach(product => {
+                const productHTML = `
+                    <div class="product">
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <h4>${product.name}</h4>
+                        <p class="price">$${product.price}</p>
+                        <p>Stock: ${product.stock}</p>
+                        <p>Category: ${product.category}</p>
+                    </div>
+                `;
+                productPageProducts.insertAdjacentHTML('beforeend', productHTML);
+            });
+        }
+
+        // Call the function to display products initially
+        displayProductsOnProductPage(); 
+
+       
+      function addProduct() {
+    const name = document.getElementById('productName').value;
+    const price = parseFloat(document.getElementById('productPrice').value);
+    const stock = parseInt(document.getElementById('productStock').value);
+    const category = document.getElementById('productCategory').value;
+    const description = document.getElementById('productDescription').value;
+    const imageInput = document.getElementById('productImage');
+
+    if (!name || isNaN(price) || isNaN(stock) || !category || !description) {
+        alert('Please fill all fields correctly.');
+        return;
+    }
+
+    const imageFile = imageInput.files[0];
+
+    if (imageFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const product = {
+                id: Date.now(),
+                name,
+                price,
+                stock,
+                category,
+                description,
+                imageUrl: e.target.result 
+            };
+
+            products.push(product);
+            saveProducts();
+            loadProducts();
+            clearForm();
+        };
+        reader.readAsDataURL(imageFile);
+    } else {
+        const product = {
+            id: Date.now(),
+            name,
+            price,
+            stock,
+            category,
+            description,
+            imageUrl: 'https://via.placeholder.com/150'
+        };
+
+        products.push(product);
+        saveProducts();
+        loadProducts();
+        clearForm();
+    }
+}
+  function clearForm() {
+    document.getElementById('productName').value = '';
+    document.getElementById('productPrice').value = '';
+    document.getElementById('productStock').value = '';
+    document.getElementById('productCategory').value = '';
+    document.getElementById('productDescription').value = '';
+    document.getElementById('productImage').value = '';
+}
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            const newName = prompt('Enter new name:', product.name);
+            const newPrice = parseFloat(prompt('Enter new price:', product.price));
+            const newStock = parseInt(prompt('Enter new stock:', product.stock));
+
+            if (newName && !isNaN(newPrice) && !isNaN(newStock)) {
+                product.name = newName;
+                product.price = newPrice;
+                product.stock = newStock;
+                saveProducts();
+                loadProducts();
+            }
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                products = products.filter(p => p.id !== id);
+                saveProducts();
+                loadProducts();
+            }
+        }
+
+       function saveProducts() {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+     
+  function loadProducts() {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
+
+    products.forEach(product => {
+        const productHTML = `
+            <div class="product">
+                <img src="${product.imageUrl}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/150'">
+                <h4>${product.name}</h4>
+                <p class="price">$${product.price}</p>
+                <p>Stock: ${product.stock}</p>
+                <p>Category: ${product.category}</p>
+                <p>Description: ${product.description}</p>
+                <div class="action-buttons">
+                    <button class="edit-button" onclick="editProduct(${product.id})">Edit</button>
+                    <button class="delete-button" onclick="deleteProduct(${product.id})">Delete</button>
+                </div>
+            </div>
+        `;
+        productList.insertAdjacentHTML('beforeend', productHTML);
+    });
+}
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.category.toLowerCase().includes(searchTerm)
+            );
+            
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                const productHTML = `
+                    <div class="product">
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <h4>${product.name}</h4>
+                        <p class="price">$${product.price}</p>
+                        <p>Stock: ${product.stock}</p>
+                        <p>Category: ${product.category}</p>
+                        <div class="action-buttons">
+                            <button class="edit-button" onclick="editProduct(${product.id})">Edit</button>
+                            <button class="delete-button" onclick="deleteProduct(${product.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+                productList.insertAdjacentHTML('beforeend', productHTML);
+            });
+        });
+
+        // Initial load
+        if (!localStorage.getItem('products')) {
+            localStorage.setItem('products', JSON.stringify([]));
+        }
+    </script>
+	<script src="reset.js"></script>
+</body>
+</html>

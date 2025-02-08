@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Normal Carousel */
+        .carousel-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 100px auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .carousel img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .carousel-btn.left { left: 10px; }
+        .carousel-btn.right { right: 10px; }
+
+        /* Improved Product Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Normal Carousel -->
+    <div class="carousel-container">
+        <button class="carousel-btn left" onclick="prevSlide()">&#10094;</button>
+        <div class="carousel" id="carousel">
+            <div class="carousel-item"><img src="/api/placeholder/800/300" alt="Product 1"></div>
+            <div class="carousel-item"><img src="/api/placeholder/800/300" alt="Product 2"></div>
+            <div class="carousel-item"><img src="/api/placeholder/800/300" alt="Product 3"></div>
+        </div>
+        <button class="carousel-btn right" onclick="nextSlide()">&#10095;</button>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h2 id="modalProductName"></h2>
+            <img id="modalProductImage" src="" alt="Product" style="max-width: 100%; height: auto;">
+            <p id="modalProductDescription"></p>
+            <p style="font-size: 1.5rem; font-weight: bold;" id="modalProductPrice"></p>
+            <button class="button button-primary" onclick="addToCart()">Add to Cart</button>
+        </div>
+    </div>
+
+    <script>
+        let currentIndex = 0;
+
+        function nextSlide() {
+            const carousel = document.getElementById('carousel');
+            currentIndex = (currentIndex + 1) % 3;
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        function prevSlide() {
+            const carousel = document.getElementById('carousel');
+            currentIndex = (currentIndex - 1 + 3) % 3;
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        function openProductModal(name, image, description, price) {
+            document.getElementById('modalProductName').innerText = name;
+            document.getElementById('modalProductImage').src = image;
+            document.getElementById('modalProductDescription').innerText = description;
+            document.getElementById('modalProductPrice').innerText = `$${price}`;
+            document.getElementById('productModal').style.display = 'block';
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
