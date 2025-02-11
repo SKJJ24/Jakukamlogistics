@@ -98,6 +98,21 @@
             transform: translateY(30px);
             animation: fadeUp 1s 0.3s forwards;
         }
+		@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero button {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+}
+
 
         /* Features Section */
         .features {
@@ -194,35 +209,42 @@
 
        
         /* Mobile Navigation */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
+       
+        
 
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: block;
-            }
+         /* Hide menu on mobile */
 
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                padding: 1rem;
-                flex-direction: column;
-                text-align: center;
-            }
 
-            .nav-links.active {
-                display: flex;
-            }
+/* Show menu when active */
+.nav-links.active {
+    display: flex;
+}
+
+/* Hamburger Menu Button */
+.mobile-menu-btn {
+    display: none;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Show menu button on mobile */
+@media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .nav-links {
+        flex-direction: column;
+    }
+
+    .nav-links a {
+        padding: 10px;
+        display: block;
+        font-size: 18px;
+    }
+}
 
             .about-content {
                 grid-template-columns: 1fr;
@@ -270,13 +292,25 @@
         }
 
         .products-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            padding: 2rem 0;
-        }
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 per row */
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr; /* 1 per row */
+    }
+}
+
 
         .product-card {
             background: white;
@@ -444,10 +478,19 @@
 
         /* Cart Badge */
           .cart-icon {
-            position: relative;
-            display: inline-block;
-            padding: 8px 15px;
-        }
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    background: var(--secondary-blue);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
 
         .cart-count {
             background: red;
@@ -598,11 +641,20 @@
             position: relative;
         }
 
-        .product-slider {
-            display: flex;
-            gap: 20px;
-            transition: transform 0.5s ease-in-out;
-        }
+       .product-slider {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Hide scrollbar */
+    -ms-overflow-style: none; /* Hide scrollbar for IE */
+}
+
+/* Hide scrollbar for Chrome, Safari */
+.product-slider::-webkit-scrollbar {
+    display: none;
+}
+
 
         .product {
             flex: 0 0 calc(25% - 20px);
@@ -663,6 +715,22 @@
 
         .prev { left: 10px; }
         .next { right: 10px; }
+		@media (max-width: 768px) {
+    button {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+
+    input, textarea {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -1029,7 +1097,7 @@
                 <h3>Contact Info</h3>
                 <ul>
                     <li>📞 +263 077 713 8955</li>
-                    <li>📧 info@yourstore.com</li>
+                    <li>📧 Jakukamlogistics@gmail.com</li>
                     <li>📍 185 Arcturus Road, Harare, Zimbabwe</li>
                 </ul>
             </div>
@@ -1044,7 +1112,7 @@
             </div>
         </div>
         <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1)">
-            <p>&copy; 2025 Your Store. All rights reserved.</p>
+            <p>&copy; 2025 Jakukam logistics. All rights reserved.</p>
         </div>
     </footer>
   <!-- Login Modal -->
@@ -1103,12 +1171,20 @@ function updateHomeCartCount() {
         });
 
         // Mobile menu toggle
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const navLinks = document.querySelector('.nav-links');
+      const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+const navLinks = document.querySelector('.nav-links');
 
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
+mobileMenuBtn.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+});
+
+// Close menu when a link is clicked
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+    });
+});
+
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1167,7 +1243,36 @@ function updateHomeCartCount() {
             // Add your login logic here
             alert('Login functionality to be implemented');
         });
-  
+  const slider = document.querySelector('.product-slider');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.classList.add('active');
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+
+slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.classList.remove('active');
+});
+
+slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.classList.remove('active');
+});
+
+slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // Speed of scroll
+    slider.scrollLeft = scrollLeft - walk;
+});
+
     </script>
 </body>
 </html>
