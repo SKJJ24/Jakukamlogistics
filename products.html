@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <title>Products | Jakukam Logistics</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.6.2/fuse.min.js"></script>
+
+    <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        :root {
+            --primary-blue: #e6f3ff;
+            --secondary-blue: #0080ff;
+            --accent-blue: #004d99;
+        }
+         body {
+            background: #e6f3ff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            background: white;
+            color: var(--accent-blue);
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .nav a {
+            color: var(--secondary-blue);
+            text-decoration: none;
+            padding: 10px 15px;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .nav a:hover {
+            background: var(--primary-blue);
+            border-radius: 5px;
+        }
+       .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .cart-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--secondary-blue);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+         .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .product {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .product:hover {
+            transform: scale(1.02);
+        }
+        .product img {
+            max-width: 100%;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .product h4 {
+            margin: 10px 0;
+        }
+        .price {
+            font-size: 18px;
+            font-weight: bold;
+            color:  #0080ff;
+        }
+        .stock-status {
+            font-size: 14px;
+            color: #888;
+		}
+      .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .cta-button, .view-button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+        .cta-button {
+            background: #0080ff;
+            color: white;
+        }
+        .cta-button:hover {
+            background: #005bb5;
+        }
+        .view-button {
+            background: white;
+            color: #0080ff;
+            border: 2px solid #0080ff;
+        }
+        .view-button:hover {
+            background: #0080ff;
+            color: white;
+        }
+		.cart-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--secondary-blue);
+    color: white;
+    font-size: 18px;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.floating-cart {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    width: 280px;
+    display: none;
+    z-index: 1000;
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.floating-cart.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cart-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.remove-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+/* Modal Background with Backdrop Blur */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Modern Modal Box */
+.modal-content {
+    background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: modalPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    margin: 40px auto; /* Add margin to top and bottom */
+    max-height: 80vh; /* Maximum height of 80% of viewport height */
+    overflow-y: auto; /* Enable scrolling within modal content */
+}
+
+/* Custom Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* For Firefox */
+.modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+/* Smooth Animation */
+@keyframes modalPop {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.8) translateY(-30px);
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Enhanced Image Styling */
+.modal-content img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.modal-content img:hover {
+    transform: scale(1.02);
+}
+
+/* Typography */
+.modal-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 15px;
+}
+
+.modal-content p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #636e72;
+    margin-bottom: 15px;
+}
+
+/* Price Tag Styling */
+.price-tag {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2ecc71;
+    margin: 15px 0;
+}
+
+/* Modern Button Layout */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+/* Button Styling */
+.add-to-cart-btn, .close-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart-btn {
+    background: #2ecc71;
+    color: white;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.close-btn {
+    background: #e74c3c;
+    color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+}
+
+.add-to-cart-btn:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.close-btn:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* Close Icon */
+.close-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    color: #636e72;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-icon:hover {
+    color: #2d3436;
+}
+
+/* Update Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 20px auto; /* Smaller margin on mobile */
+        max-height: 85vh; /* Slightly higher on mobile */
+    }
+
+    .modal-content img {
+        height: 250px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+}
+.search-container {
+    position: relative;
+    margin: 15px auto;
+    background: white;
+    padding: 10px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 400px;
+    z-index: 1000;
+}
+
+@media screen and (max-width: 480px) {
+    .search-container {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+
+.search-container input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 50px;
+}
+
+.search-container i {
+    color: var(--secondary-blue);
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+@media screen and (max-width: 480px) {
+    .cart-icon {
+        top: 15px;
+        right: 10px;
+        font-size: 16px;
+        padding: 8px 12px;
+    }
+
+    .floating-cart {
+        width: 90%;
+        right: 5%;
+        max-width: 350px;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-width: 350px;
+        padding: 15px;
+    }
+
+    
+    .search-container {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+.cart-icon {
+    transition: transform 0.2s ease-in-out;
+}
+
+.cart-icon:hover {
+    transform: scale(1.1);
+}
+
+.floating-cart {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.floating-cart.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.modal {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+    </style>
+</head>
+<body>
+    <div class="header">Jakukam Logistics</div>
+    <div class="nav">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="about us.html">About Us</a>
+        <a href="contact us.html">Contact</a>
+    </div>
+    <div class="cart-icon" onclick="toggleCart()">
+<i class="fas fa-shopping-cart"></i><span id="cartCount">0</span>
+</div>
+
+<div class="floating-cart" id="cartDropdown">
+    <h3>Your Cart</h3>
+    <div id="cartItems"></div>
+    <p><strong>Total:</strong> $<span id="cartTotal">0.00</span></p>
+    <button class="checkout-button" onclick="window.location.href='checkout.html'">Checkout</button>
+</div>
+<div class="search-container">
+    <input type="text" id="searchBar" placeholder="Search products..." oninput="searchProducts()">
+    <i class="fas fa-search"></i>
+</div>
+
+
+	 
+       
+        <div class="products-grid">
+            <div class="product" data-price="40" data-stock="10">
+				 <span class="badge">New</span>
+                <img src="pic of products/CAPRI_TOASTER_2SLICE_BLACK_SIDEVIEW-scaled.jpg" alt="Capri Toaster">
+                <h4>Capri Toaster</h4>
+                <p class="price">Price: $40</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Capri Toaster', 40, 'pic of products/CAPRI_TOASTER_2SLICE_BLACK_SIDEVIEW-scaled.jpg')">Add to Cart</button>
+
+                <button class="view-button" onclick="openModal('Capri Toaster', 40, 'pic of products/CAPRI_TOASTER_2SLICE_BLACK_SIDEVIEW-scaled.jpg', 'A high-quality 2-slice toaster with multiple settings.', 10)">View More</button>
+
+          </div>
+        
+           
+            <div class="product" data-price="120" data-stock="5">
+                <img src="pic of products/BLENDER.jpg" alt="Blender">
+                <h4>Blender</h4>
+                <p class="price">Price: $120</p>
+                <p class="stock-status">In Stock (5 available)</p>
+                <button class="cta-button" onclick="addToCart('Blender', 120)">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('Product pages/blender.html')">View more</button>
+            </div>
+            <div class="product" data-price="60" data-stock="0">
+                <img src="pic of products/IRON.jpg" alt="Iron">
+                <h4>Electric Iron</h4>
+                <p class="price">Price: $60</p>
+                <p class="stock-status">Out of Stock</p>
+                <button class="cta-button" disabled style="background: gray; cursor: not-allowed;">Out of Stock</button>
+                <button class="view-button" onclick="viewProduct('Product pages/iron.html')">View more</button>
+            </div>
+			 <div class="product" data-price="120" data-stock="5">
+                <img src="pic of products/104073405_61ea1ed7d060d6522cc5301454b08640.png" alt="Samsung Galaxy A06">
+                <h4>Samsung Galaxy A06</h4>
+                <p class="price">Price: $120</p>
+                <p class="stock-status">In Stock (5 available)</p>
+                <button class="cta-button" onclick="addToCart('Samsung Galaxy A06', 120 , 'pic of products/104073405_61ea1ed7d060d6522cc5301454b08640.png')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/104073405_61ea1ed7d060d6522cc5301454b08640.png')">View more</button>
+            </div>
+			  <div class="product" data-price="159.99" data-stock="10">
+                <img src="pic of products/samsung_galaxy_a15.png" alt="Samsung Galaxy A15">
+                <h4>Blender</h4>
+                <p class="price">Price: $159.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Samsung Galaxy A15', 159.99 , 'pic of products/samsung_galaxy_a15.png')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/samsung_galaxy_a15.png')">View more</button>
+            </div>
+			 <div class="product" data-price="199.99" data-stock="10">
+                <img src="pic of products/57_64516087-5d4d-4140-a570-8e55183857bf.png" alt="Samsung Galaxy Tab A8">
+                <h4>Blender</h4>
+                <p class="price">Price: $199.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Samsung Galaxy Tab A8', 199.99 , 'pic of products/57_64516087-5d4d-4140-a570-8e55183857bf.png')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/57_64516087-5d4d-4140-a570-8e55183857bf.png')">View more</button>
+            </div>
+		
+			  <div class="product" data-price="199.99" data-stock="10">
+                <img src="pic of products/61GWsP5FhLL.jpg" alt="Nokia c31">
+                <h4>Nokia C31</h4>
+                <p class="price">Price: $199.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Nokia C31', 199.99 , 'pic of products/61GWsP5FhLL.jpg')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/61GWsP5FhLL.jpg')">View more</button>
+            </div>
+			<div class="product" data-price="199.99" data-stock="10">
+                <img src="pic of products/61zy47FDI3L.jpg" alt="Samsung Galaxy Tab A9">
+                <h4>Samsung Galaxy Tab A9</h4>
+                <p class="price">Price: $199.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Samsung Galaxy Tab A9', 199.99 , 'pic of products/61zy47FDI3L.jpg')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/61zy47FDI3L.jpg')">View more</button>
+            </div>
+			<div class="product" data-price="69.99" data-stock="10">
+                <img src="pic of products/DSTV EXPLORER.png" alt="DSTV Explorer">
+                <h4>DSTV Explorer</h4>
+                <p class="price">Price: $69.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('DSTV explorer', 69.99 , 'pic of products/DSTV EXPLORER.png')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/DSTV EXPLORER.png')">View more</button>
+            </div>
+			<div class="product" data-price="169.99" data-stock="10">
+                <img src="pic of products/itel-pad-1 (1).jpg" alt="Itel pad 1">
+                <h4>Itel pad 1</h4>
+                <p class="price">Price: $169.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('DSTV explorer', 69.99 , 'pic of products/DSTV EXPLORER.png')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/DSTV EXPLORER.png')">View more</button>
+            </div>
+				<div class="product" data-price="69.99" data-stock="10">
+                <img src="pic of products/1_28fb2a60-aa79-463b-9906-6176cb70b4e8_1.jpg" alt="Oraimo FreePods 3">
+                <h4>Oraimo FreePods 3</h4>
+                <p class="price">Price: $69.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Oraimo FreePods 3', 69.99 , 'pic of products/1_28fb2a60-aa79-463b-9906-6176cb70b4e8_1.jpg')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/1_28fb2a60-aa79-463b-9906-6176cb70b4e8_1.jpg')">View more</button>
+            </div>
+			<div class="product" data-price="129.99" data-stock="10">
+                <img src="pic of products/71Wz65EByTL.jpg" alt="Nokia C22">
+                <h4>Nokia C22</h4>
+                <p class="price">Price: $129.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Nokia C22', 129.99 , 'pic of products/71Wz65EByTL.jpg')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/71Wz65EByTL.jpg')">View more</button>
+            </div>
+			<div class="product" data-price="129.99" data-stock="10">
+                <img src="pic of products/71qDL+sDujL.jpg" alt="Hisense smart tv 42inch">
+                <h4>Hisense Smart Tv 42inch</h4>
+                <p class="price">Price: $129.99</p>
+                <p class="stock-status">In Stock (10 available)</p>
+                <button class="cta-button" onclick="addToCart('Hisense Smart Tv 42inch', 129.99 , 'pic of products/71qDL+sDujL.jpg')">Add to Cart</button>
+                <button class="view-button" onclick="viewProduct('pic of products/71qDL+sDujL.jpg')">View more</button>
+            </div>
+</div>
+    <div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="Product Image">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDescription"></p>
+        <p><strong>Price:</strong> $<span id="modalPrice"></span></p>
+        <p><strong>Stock:</strong> <span id="modalStock"></span> available</p>
+        <div class="modal-buttons">
+            <button class="add-to-cart-btn" onclick="addToCartFromModal()">Add to Cart</button>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        updateCartCount();
+
+        function addToCart(name, price, image) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    let existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ name, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartDisplay();
+    alert(`${name} has been added to your cart!`);
+}
+
+
+        function updateCartCount() {
+            document.getElementById('cartCount').innerText = cart.length;
+        }
+
+        function viewProduct(url) {
+            window.location.href = url;
+        }
+		
+
+function updateCartDisplay() {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cartContainer = document.getElementById("cartItems");
+    let totalContainer = document.getElementById("cartTotal");
+    let cartCount = document.getElementById("cartCount");
+    let total = 0;
+
+    cartContainer.innerHTML = "";
+    cartCount.innerText = cart.length;
+
+    if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+        totalContainer.innerText = "0.00";
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        let itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        cartContainer.innerHTML += `
+            <div class="cart-item">
+                <img src="${item.image}" alt="${item.name}">
+                <span>${item.name} x${item.quantity}</span>
+                <span>$${itemTotal.toFixed(2)}</span>
+                <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
+            </div>`;
+    });
+
+    totalContainer.innerText = total.toFixed(2);
+}
+
+function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart.splice(index, 1);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartDisplay();
+}
+
+document.addEventListener("DOMContentLoaded", updateCartDisplay);
+let selectedProduct = {};
+
+function openModal(name, price, image, description, stock) {
+    selectedProduct = { name, price, image };
+
+    document.getElementById("modalImage").src = image;
+    document.getElementById("modalTitle").innerText = name;
+    document.getElementById("modalPrice").innerText = price.toFixed(2);
+    document.getElementById("modalDescription").innerText = description;
+    document.getElementById("modalStock").innerText = stock;
+
+    let modal = document.getElementById("productModal");
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    let modal = document.getElementById("productModal");
+    modal.style.display = "none";
+}
+
+function addToCartFromModal() {
+    addToCart(selectedProduct.name, selectedProduct.price, selectedProduct.image);
+    closeModal();
+}
+
+
+function toggleCart() {
+    let cartDropdown = document.getElementById("cartDropdown");
+    cartDropdown.classList.toggle("show");
+}
+
+
+ let productsList = [
+ { 
+      name: "Capri Toaster", 
+      price: 40, 
+      image: "pic of products/CAPRI_TOASTER_2SLICE_BLACK_SIDEVIEW-scaled.jpg",
+      description: "Modern 2-slice toaster with adjustable browning control"
+    },
+    { 
+      name: "Blender", 
+      price: 120, 
+      image: "pic of products/BLENDER.jpg",
+      description: "Powerful blender for smoothies and food processing"
+    },
+    { 
+      name: "Electric Iron", 
+      price: 60, 
+      image: "pic of products/IRON.jpg",
+      description: "Steam iron with temperature control and anti-calc system"
+    },
+    { 
+      name: "Samsung Galaxy A06", 
+      price: 120, 
+      image: "pic of products/104073405_61ea1ed7d060d6522cc5301454b08640.png",
+      description: "Budget-friendly smartphone with great features"
+    }
+  ];
+        const fuseOptions = {
+            keys: ["name"],
+            threshold: 0.3
+        };
+
+        const fuse = new Fuse(productsList, fuseOptions);
+
+        function searchProducts() {
+            let query = document.getElementById("searchBar").value.trim();
+            let results = query ? fuse.search(query).map(result => result.item) : productsList;
+            updateProductDisplay(results);
+        }
+
+        function updateProductDisplay(filteredProducts) {
+    let productsContainer = document.querySelector(".products-grid");
+    productsContainer.innerHTML = "";
+
+    if (filteredProducts.length === 0) {
+        productsContainer.innerHTML = "<p style='text-align:center;'>No products found</p>";
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+        let productElement = document.createElement("div");
+        productElement.classList.add("product");
+        productElement.innerHTML = `
+            <span class="badge">New</span>
+            <img src="${product.image}" alt="${product.name}">
+            <h4>${product.name}</h4>
+            <p class="price">$${product.price}</p>
+            <div class="buttons">
+                <button class="view-button" onclick="openModal('${product.name}', ${product.price}, '${product.image}', '${product.description}', 10)">View More</button>
+                <button class="cta-button" onclick="addToCart('${product.name}', ${product.price}, '${product.image}')">Add to Cart</button>
+            </div>
+</div>
+        `;
+        productsContainer.appendChild(productElement);
+    });
+}
+
+       
+
+        document.addEventListener("DOMContentLoaded", () => updateProductDisplay(productsList));
+
+    </script>
+</body>
+</html>
