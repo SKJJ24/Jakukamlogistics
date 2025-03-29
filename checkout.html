@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jakukam Logistics - Checkout</title>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+	<link rel="shortcut icon" href="jakukam_logo_transparent.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -21,7 +22,11 @@
             --secondary-blue: #0080ff;
             --accent-blue: #004d99;
         }
-
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+}
         body {
             background: var(--primary-blue);
             padding: 20px;
@@ -208,7 +213,125 @@
             display: none;
             text-align: center;
         }
-		 
+	@media screen and (max-width: 768px) {
+    /* Make checkout container adapt to mobile */
+    .checkout-container {
+        padding: 15px;
+        width: 95%;
+        margin: 0 auto;
+    }
+    
+    /* Change cart item from grid to more flexible layout */
+    .cart-item {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 15px 10px;
+    }
+    
+    /* Adjust item image */
+    .cart-item img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Create a better layout for product info */
+    .cart-item > div:nth-child(2) {  /* Product name/details div */
+        flex: 1 1 calc(100% - 70px); /* Take remaining width next to image */
+    }
+    
+    /* Put price, quantity, and subtotal on new line */
+    .cart-item > div:nth-child(3),  /* Price */
+    .cart-item > div:nth-child(4),  /* Quantity */
+    .cart-item > div:nth-child(5) { /* Subtotal */
+        flex: 1 1 30%;
+        text-align: center;
+    }
+    
+    /* Make quantity controls smaller */
+    .quantity-controls {
+        justify-content: center;
+    }
+    
+    /* Put remove button on same line, right aligned */
+    .cart-item > div:nth-child(6) { /* Remove button container */
+        flex: 0 0 auto;
+        margin-left: auto;
+    }
+    
+    /* Adjust buttons for better touch targets */
+    .quantity-controls button,
+    .remove-item {
+        padding: 8px 12px;
+    }
+    
+    /* Make form elements easier to tap */
+    .form-group input, 
+    .form-group textarea {
+        padding: 12px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Make checkout button larger for touch */
+    .checkout-button {
+        padding: 15px 20px;
+    }
+}
+
+/* For very small screens */
+@media screen and (max-width: 480px) {
+    /* Even simpler cart item layout */
+    .cart-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-areas: 
+            "image title"
+            "image price"
+            "quantity quantity"
+            "subtotal remove";
+        gap: 8px;
+        padding: 12px 8px;
+    }
+    
+    .cart-item img {
+        grid-area: image;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .cart-item > div:nth-child(2) { /* Title */
+        grid-area: title;
+        font-weight: bold;
+    }
+    
+    .cart-item > div:nth-child(3) { /* Price */
+        grid-area: price;
+    }
+    
+    .cart-item > div:nth-child(4) { /* Quantity */
+        grid-area: quantity;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0;
+    }
+    
+    .cart-item > div:nth-child(5) { /* Subtotal */
+        grid-area: subtotal;
+        font-weight: bold;
+    }
+    
+    .cart-item > div:nth-child(6) { /* Remove button */
+        grid-area: remove;
+        text-align: right;
+    }
+    
+    /* Further simplify quantity controls */
+    .quantity-controls {
+        justify-content: flex-start;
+    }
+}	 
     </style>
 	
 </head>
